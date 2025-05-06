@@ -1,1 +1,183 @@
-<p> minh hungf anw cuwts</p>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm vào giỏ hàng</title>
+    <link rel="stylesheet" href="/dark-mode/css/style.css">
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        .product {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .product img {
+            margin-right: 15px;
+        }
+
+        .product h3 {
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+
+        .add-to-cart {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .add-to-cart:hover {
+            background-color: #0056b3;
+        }
+
+        #cart-items {
+            list-style: none;
+            padding: 0;
+        }
+
+        #cart-items li {
+            border-bottom: 1px dashed #eee;
+            padding: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #cart-items li span {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+
+        #cart-items li button {
+            background: none;
+            border: none;
+            color: red;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #cart-total {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="product">
+        <img src="product1.jpg" alt="Sản phẩm 1" width="100">
+        <h3>Sản phẩm 1</h3>
+        <p>Giá: 100.000 VNĐ</p>
+        <button class="add-to-cart" data-product-name="Sản phẩm 1" data-product-price="100000">Thêm vào giỏ hàng</button>
+    </div>
+
+    <div class="product">
+        <img src="product2.jpg" alt="Sản phẩm 2" width="100">
+        <h3>Sản phẩm 2</h3>
+        <p>Giá: 150.000 VNĐ</p>
+        <button class="add-to-cart" data-product-name="Sản phẩm 2" data-product-price="150000">Thêm vào giỏ hàng</button>
+    </div>
+
+    <h2>Giỏ hàng</h2>
+    <ul id="cart-items">
+        </ul>
+    <p>Tổng cộng: <span id="cart-total">0</span> VNĐ</p>
+    <button onclick="toggleTheme()">Chuyển chế độ</button>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    const cartItemsList = document.getElementById('cart-items');
+    const cartTotalElement = document.getElementById('cart-total');
+    let cart = [];
+
+    // Hàm cập nhật giao diện giỏ hàng
+    function updateCartUI() {
+        cartItemsList.innerHTML = ''; // Xóa các mục hiện tại trong giỏ hàng
+        let total = 0;
+
+        cart.forEach((item, index) => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `
+                <span>${item.name} - ${formatCurrency(item.price)} x ${item.quantity}</span>
+                <button class="remove-from-cart" data-index="${index}">Xóa</button>
+            `;
+            cartItemsList.appendChild(listItem);
+            total += item.price * item.quantity;
+        });
+
+        cartTotalElement.textContent = formatCurrency(total);
+
+        // Thêm sự kiện xóa cho các nút mới được tạo
+        const removeButtons = document.querySelectorAll('.remove-from-cart');
+        removeButtons.forEach(button => {
+            button.addEventListener('click', removeItemFromCart);
+        });
+    }
+
+    // Hàm định dạng tiền tệ
+    function formatCurrency(number) {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(number);
+    }
+
+    // Hàm thêm sản phẩm vào giỏ hàng
+    function addToCart(event) {
+        const button = event.target;
+        const productName = button.dataset.productName;
+        const productPrice = parseInt(button.dataset.productPrice);
+
+        const existingItem = cart.find(item => item.name === productName);
+
+        if (existingItem) {
+            existingItem.quantity++;
+        } else {
+            cart.push({
+                name: productName,
+                price: productPrice,
+                quantity: 1
+            });
+        }
+
+        updateCartUI();
+    }
+
+    // Hàm xóa sản phẩm khỏi giỏ hàng
+    function removeItemFromCart(event) {
+        const button = event.target;
+        const indexToRemove = parseInt(button.dataset.index);
+        cart.splice(indexToRemove, 1);
+        updateCartUI();
+    }
+
+    // Thêm sự kiện click cho tất cả các nút "Thêm vào giỏ hàng"
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', addToCart);
+    });
+
+    // Hiển thị giỏ hàng ban đầu (nếu có dữ liệu từ trước)
+    updateCartUI();
+});
+// Gán theme mặc định từ localStorage (nếu có)
+const currentTheme = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', currentTheme);
+document.getElementById("modeLabel").textContent = currentTheme === 'dark' ? 'Tối' : 'Sáng';
+
+function toggleTheme() {
+  const root = document.documentElement;
+  const isDark = root.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  root.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  document.getElementById("modeLabel").textContent = newTheme === 'dark' ? 'Tối' : 'Sáng';
+}
+    </script>
+</body>
+</html>
