@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        ul>li {
+            list-style: none;
+        }
+
+        .col-2 {
+            background-color: rgb(37, 90, 160);
+            height: 100vh;
+        }
+
+        ul li a {
+            color: white;
+            font-size: 1.4em;
+        }
+
+        .list-menu ul li:hover {
+            background-color: rgb(146, 146, 199);
+        }
+
+        ul li {
+            padding: 10px;
+        }
+
+        table {
+            width: 96%;
+            padding: 10px;
+            margin-top: 40px;
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        tr,
+        td {
+            padding: 12px auto;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-2">
+                <h1 style="text-indent: 1cm;">WELCOME</h1>
+                <h1 style="text-indent: 3cm;">CSSHOP</h1>
+                <div class="list-menu">
+                    <ul>
+                        <li><a href="courses.html">Sản phẩm</a></li>
+                        <li><a href="user.html">Khách hàng</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-10">
+                <div class="show-product">
+                    <h1 style="font-weight: bold; padding-left: 60px;">QUẢN LÝ SẢN PHẨM</h1>
+                    <h2 style="text-indent:3cm ;">Danh sách khách hàng</h2>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>title</th>
+                            <th>price</th>
+                            <th>description</th>
+                            <th>image</th>
+                            <th>instruction</th>
+                        </tr>
+
+                    </thead>
+                    <tbody id="user-body">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <script>
+            function fetchUser() {
+                fetch('https://681ea6eac1c291fa6634a865.mockapi.io/product', 
+                {
+                    method: 'GET',
+                }
+                )
+                    .then((response) => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                    })
+                    .then((users) => {
+                        let tbody = document.getElementById('user-body')
+                        let content = ""
+                        users.forEach(user => {
+                            content += ` 
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.title}</td>
+                    <td>${user.price}</td>
+                    <td>${user.description}</td>
+                    <td><img src="${user.image}" width="50"></td>
+                    <td>${user.instruction}</td>
+                </tr>`
+                })
+                    tbody.innerHTML = content
+                    })
+                    .catch((error) =>{
+                        console.log(error)
+                    })
+            }
+            window.onload = fetchUser;
+
+        </script>
+    </div>
+</body>
+
+</html>
